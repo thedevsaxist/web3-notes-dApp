@@ -8,7 +8,10 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   serviceLocator();
   runApp(
-    ChangeNotifierProvider(create: (context) => sl<IHomeScreenProvider>(), child: const Web3Demo()),
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (context) => sl<IHomeScreenProvider>())],
+      child: const Web3Demo(),
+    ),
   );
 }
 
