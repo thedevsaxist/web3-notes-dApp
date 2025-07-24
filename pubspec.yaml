@@ -18,6 +18,12 @@ dependencies:
   url_launcher: ^6.3.2
   provider: ^6.1.5
   get_it: ^8.0.3
+  flutter_dotenv: ^5.2.1
+  web_socket_channel: ^2.4.0
+  default_ui_components:
+    # path: "/Users/chidiebubeiroezindu/Developer/flutter_projects/default_ui_components"
+    git: "https://github.com/thedevsaxist/default_ui_components"
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -27,6 +33,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+    - .env
+    - build/contracts/NotesContract.json
+    - assets/etherium-logo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/etherium-logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true

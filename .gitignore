@@ -12,6 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 
+
+*.env
+web_socket_test.py
+
 # IntelliJ related
 *.iml
 *.ipr
