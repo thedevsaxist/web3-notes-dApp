@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:web3demo/app/core/service_locator.dart';
+import 'package:web3demo/app/provider/home_screen_provider.dart';
+import 'package:web3demo/app/ui/home_screen.dart';
 
 void main() {
-  runApp(const Web3Demo());
+  WidgetsFlutterBinding.ensureInitialized();
+  serviceLocator();
+  runApp(
+    ChangeNotifierProvider(create: (context) => sl<IHomeScreenProvider>(), child: const Web3Demo()),
+  );
 }
 
 class Web3Demo extends StatelessWidget {
@@ -12,10 +19,8 @@ class Web3Demo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Web3 Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      // home: const HomePage(),
-    ); 
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      home: const HomeScreen(),
+    );
   }
 }
