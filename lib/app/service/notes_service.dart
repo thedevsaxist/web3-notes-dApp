@@ -30,7 +30,7 @@ abstract class INotesService extends ChangeNotifier {
 }
 
 class NotesService extends ChangeNotifier implements INotesService {
-  List<Note> _notes = [];
+  final List<Note> _notes = [];
 
   @override
   List<Note> get notes => _notes;
@@ -74,8 +74,11 @@ class NotesService extends ChangeNotifier implements INotesService {
   Future<void> getABI() async {
     final String abiFile = await rootBundle.loadString("build/contracts/NotesContract.json");
     final jsonABI = jsonDecode(abiFile);
-    _abiCode = ContractAbi.fromJson(jsonEncode(jsonABI["abi"]), "abi");
+    _abiCode = ContractAbi.fromJson(jsonEncode(jsonABI["abi"]), "NotesContract");
     _contractAddress = EthereumAddress.fromHex(jsonABI["networks"]["31337"]["address"]);
+
+    print("Contract address: $_contractAddress");
+    print("ABI Functions: ${_abiCode.functions.map((f) => f.name).toList()}");
   }
 
   @override
@@ -91,51 +94,66 @@ class NotesService extends ChangeNotifier implements INotesService {
     _contractNotes = _deployedContract.function("notes");
     _noteCount = _deployedContract.function("noteCount");
 
+    print("Note count ${_noteCount.name}");
+    print("Note count ${_noteCount.outputs}");
+
     await fetchNotes();
   }
 
   @override
-  Future<void> deleteNote(int id) {
-    // TODO: implement deleteNote
-    throw UnimplementedError();
+  Future<void> deleteNote(int id) async {
+    await _web3client.sendTransaction(
+      _creds,
+      Transaction.callContract(
+        contract: _deployedContract,
+        function: _deleteNote,
+        parameters: [BigInt.from(id)],
+      ),
+    );
+
+    notifyListeners();
+    fetchNotes();
   }
 
   @override
   Future<void> fetchNotes() async {
-    try {
-      print("Fetch was called");
-      List totalTaskList = await _web3client.call(
+    // try {
+    print("Calling noteCount...");
+
+    final totalTaskList = await _web3client.call(
+      contract: _deployedContract,
+      function: _noteCount,
+      params: [],
+    );
+
+    print("noteCount returned: $totalTaskList");
+
+    print("Total task list = $totalTaskList");
+    int totalTaskLength = totalTaskList[0].toInt();
+    _notes.clear();
+
+    for (var i = 0; i < totalTaskLength; i++) {
+      var temp = await _web3client.call(
         contract: _deployedContract,
-        function: _noteCount,
-        params: [],
+        function: _contractNotes,
+        params: [BigInt.from(i)],
       );
 
-      print("Total task list = $totalTaskList");
-      int totalTaskLength = totalTaskList[0].toInt();
-      _notes.clear();
+      print("Temp: $temp");
 
-      for (var i = 0; i < totalTaskLength; i++) {
-        var temp = await _web3client.call(
-          contract: _deployedContract,
-          function: _contractNotes,
-          params: [BigInt.from(i)],
-        );
-
-        print("Temp: $temp");
-
-        if (temp[1] != "") {
-          _notes.add(Note(id: (temp[0] as BigInt).toInt(), title: temp[1], description: temp[2]));
-        }
+      if (temp[1] != "") {
+        _notes.add(Note(id: (temp[0] as BigInt).toInt(), title: temp[1], description: temp[2]));
       }
-
-      if (_notes.isNotEmpty) {
-        print(_notes[0].title);
-      }
-
-      notifyListeners();
-    } catch (e) {
-      print("Error fetching notes: $e");
     }
+
+    if (_notes.isNotEmpty) {
+      print(_notes[0].title);
+    }
+
+    notifyListeners();
+    // } catch (e) {
+    //   print("Error fetching notes: $e");
+    // }
   }
 
   @override
