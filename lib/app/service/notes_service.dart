@@ -94,7 +94,7 @@ class NotesService extends ChangeNotifier implements INotesService {
     _contractNotes = _deployedContract.function("notes");
     _noteCount = _deployedContract.function("noteCount");
 
-    print("Note count ${_noteCount.name}");
+    print("Note count name ${_noteCount.name}");
     print("Note count ${_noteCount.outputs}");
 
     await fetchNotes();

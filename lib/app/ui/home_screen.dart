@@ -1,6 +1,4 @@
 import 'package:default_ui_components/default_ui_components.dart';
-import 'package:default_ui_components/primary_button.dart';
-import 'package:default_ui_components/text_input.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

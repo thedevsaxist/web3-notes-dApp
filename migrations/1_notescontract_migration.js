@@ -2,7 +2,7 @@ const NotesContract = artifacts.require("NotesContract"); // this is similar to 
 
 // always use [CommonJS]. Migrations will fail otherwise
 module.exports = async function (deployer) {
-    deployer.deploy(NotesContract);
-    const instance = await NotesContract.deployed();
-    console.log("✅ Contract deployed at:", instance.address);
+    await deployer.deploy(NotesContract);
+    const contract = await NotesContract.at(NotesContract.address);
+    console.log("✅ Contract deployed at:", contract.address);
 };
